@@ -26,36 +26,6 @@ COPYING.txt included with the distribution).
 
 """
 
-# XXX
-# Remove parser testing hack
-# safeUrl()-ize action
-# Switch to unicode throughout (would be 0.3.x)
-#  See Wichert Akkerman's 2004-01-22 message to c.l.py.
-# Add charset parameter to Content-type headers?  How to find value??
-# Add some more functional tests
-#  Especially single and multiple file upload on the internet.
-#  Does file upload work when name is missing?  Sourceforge tracker form
-#   doesn't like it.  Check standards, and test with Apache.  Test
-#   binary upload with Apache.
-# mailto submission & enctype text/plain
-# I'm not going to fix this unless somebody tells me what real servers
-#  that want this encoding actually expect: If enctype is
-#  application/x-www-form-urlencoded and there's a FILE control present.
-#  Strictly, it should be 'name=data' (see HTML 4.01 spec., section
-#  17.13.2), but I send "name=" ATM.  What about multiple file upload??
-
-# Would be nice, but I'm not going to do it myself:
-# -------------------------------------------------
-# Maybe a 0.4.x?
-#   Replace by_label etc. with moniker / selector concept. Allows, eg.,
-#    a choice between selection by value / id / label / element
-#    contents.  Or choice between matching labels exactly or by
-#    substring.  Etc.
-#   Remove deprecated methods.
-#   ...what else?
-# Work on DOMForm.
-# XForms?  Don't know if there's a need here.
-
 __all__ = ['AmbiguityError', 'CheckboxControl', 'Control',
            'ControlNotFoundError', 'FileControl', 'FormParser', 'HTMLForm',
            'HiddenControl', 'IgnoreControl', 'ImageControl', 'IsindexControl',
