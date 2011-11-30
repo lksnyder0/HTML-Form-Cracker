@@ -1,3 +1,5 @@
 *.pyc
 *.lwp
 passfile.txt
+wordlists
+nbproject
